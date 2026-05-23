@@ -9,7 +9,7 @@ function(download_wasmtime)
   elseif(NOT TARGET wasmtime)
 
     SET(WASMTIME_VERSION "v37.0.0")
-    set(WASMTIME_BASE_URL "https://github.com/bytecodealliance/wasmtime/releases/download/${WASMTIME_VERSION}")
+    set(WASMTIME_BASE_URL "https://ghfast.top/https://github.com/bytecodealliance/wasmtime/releases/download/${WASMTIME_VERSION}")
 
     if(WIN32)
         # Distinguish MSVC-driven build from MinGW

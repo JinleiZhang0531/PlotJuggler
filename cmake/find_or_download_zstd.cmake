@@ -14,7 +14,7 @@ function(find_or_download_zstd)
     # zstd ###
     cpmaddpackage(
       NAME zstd
-      URL https://github.com/facebook/zstd/archive/refs/tags/v1.5.7.zip
+      URL https://ghfast.top/https://github.com/facebook/zstd/archive/refs/tags/v1.5.7.zip
       DOWNLOAD_ONLY YES)
 
     set(LIBRARY_DIR ${zstd_SOURCE_DIR}/lib)

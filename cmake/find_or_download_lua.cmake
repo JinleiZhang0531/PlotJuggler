@@ -12,7 +12,7 @@ function(find_or_download_lua)
   elseif(NOT TARGET lua_static)
     message(STATUS "Lua not found, downloading")
     cpmaddpackage(
-      NAME lua URL https://github.com/lua/lua/archive/refs/tags/v5.4.7.zip
+      NAME lua URL https://ghfast.top/https://github.com/lua/lua/archive/refs/tags/v5.4.7.zip
       DOWNLOAD_ONLY YES)
     # lua has no CMake support, so we create our own target
 
