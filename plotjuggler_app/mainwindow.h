@@ -151,6 +151,7 @@ private:
 
   std::vector<FileLoadInfo> _loaded_datafiles_history;
   std::vector<FileLoadInfo> _loaded_datafiles_previous;
+  QStringList _current_datafiles;
   CurveTracker::Parameter _tracker_param;
 
   std::map<CurveTracker::Parameter, QIcon> _tracker_button_icons;
@@ -237,6 +238,7 @@ private:
 
   void updateRecentDataMenu(QStringList new_filenames);
   void updateRecentLayoutMenu(QStringList new_filenames);
+  void updateLoadedFilesList();
 
   void updatedDisplayTime();
 

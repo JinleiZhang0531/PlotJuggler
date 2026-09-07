@@ -40,6 +40,7 @@
 #include <QHeaderView>
 #include <QStandardPaths>
 #include <QXmlStreamReader>
+#include <QFileInfo>
 
 #include "mainwindow.h"
 #include "curvelist_panel.h"
@@ -294,6 +295,10 @@ MainWindow::MainWindow(const QCommandLineParser& commandline_parser, QWidget* pa
       on_actionClearBuffer_triggered();
     }
   });
+
+  ui->labelLoadedFiles->setWordWrap(true);
+  ui->labelLoadedFiles->setTextFormat(Qt::RichText);
+  updateLoadedFilesList();
 
   _main_tabbed_widget = new TabbedPlotWidget("Main Window", this, _mapped_plot_data, this);
 
@@ -1320,6 +1325,40 @@ void MainWindow::updateRecentLayoutMenu(QStringList new_filenames)
   menu->setEnabled(new_filenames.size() > 0);
 }
 
+void MainWindow::updateLoadedFilesList()
+{
+  const int line_height = ui->labelLoadedFiles->fontMetrics().lineSpacing();
+  ui->labelLoadedFiles->setFixedHeight(line_height * 2 + 4);
+
+  if (_current_datafiles.isEmpty())
+  {
+    ui->labelLoadedFiles->setText(tr("No data file loaded"));
+    ui->labelLoadedFiles->setToolTip(QString());
+    ui->labelLoadedFiles->setEnabled(false);
+    return;
+  }
+
+  auto wrapFilename = [](QString name) {
+    name = name.toHtmlEscaped();
+    name.replace('_', QString("_<wbr>"));
+    name.replace('-', QString("-<wbr>"));
+    name.replace('.', QString(".<wbr>"));
+    return name;
+  };
+
+  QStringList names;
+  for (const QString& path : _current_datafiles)
+  {
+    const QFileInfo file_info(path);
+    const QString name = file_info.fileName().isEmpty() ? path : file_info.fileName();
+    names.push_back(wrapFilename(name));
+  }
+
+  ui->labelLoadedFiles->setEnabled(true);
+  ui->labelLoadedFiles->setText(names.join(", "));
+  ui->labelLoadedFiles->setToolTip(_current_datafiles.join('\n'));
+}
+
 void MainWindow::deleteAllData()
 {
   forEachWidget([](PlotWidget* plot) { plot->removeAllCurves(); });
@@ -1328,8 +1367,10 @@ void MainWindow::deleteAllData()
   _transform_functions.clear();
   _curvelist_widget->clear();
   _loaded_datafiles_history.clear();
+  _current_datafiles.clear();
   _undo_states.clear();
   _redo_states.clear();
+  updateLoadedFilesList();
 
   bool stopped = false;
 
@@ -1485,6 +1526,25 @@ bool MainWindow::loadDataFromFiles(QStringList filenames, bool auto_prefix)
   }
 
   ui->buttonReloadData->setEnabled(!loaded_filenames.empty());
+
+  if (!loaded_filenames.empty())
+  {
+    if (!merge_data || data_replaced_entirely)
+    {
+      _current_datafiles = loaded_filenames;
+    }
+    else
+    {
+      for (const QString& filename : loaded_filenames)
+      {
+        if (!_current_datafiles.contains(filename))
+        {
+          _current_datafiles.push_back(filename);
+        }
+      }
+    }
+  }
+  updateLoadedFilesList();
 
   if (loaded_filenames.size() > 0)
   {
@@ -1983,6 +2043,7 @@ void MainWindow::on_stylesheetChanged(QString theme)
   ui->buttonReferencePoint->setIcon(LoadSvg(":/resources/svg/reference_line.svg", theme));
 
   ui->buttonStreamingOptions->setIcon(LoadSvg(":/resources/svg/settings_cog.svg", theme));
+  updateLoadedFilesList();
 }
 
 void MainWindow::loadPluginState(const QDomElement& root)
@@ -2151,6 +2212,7 @@ bool MainWindow::loadLayoutFromFile(QString filename, bool load_datafiles)
                                                                     "Datafiles");
 
     QDomElement datafile_elem = previously_loaded_datafile.firstChildElement("fileInfo");
+    QStringList layout_datafiles;
     while (!datafile_elem.isNull())
     {
       QString datafile_path = datafile_elem.attribute("filename");
@@ -2168,8 +2230,17 @@ bool MainWindow::loadLayoutFromFile(QString filename, bool load_datafiles)
       auto plugin_elem = datafile_elem.firstChildElement("plugin");
       info.plugin_config.appendChild(info.plugin_config.importNode(plugin_elem, true));
 
-      loadDataFromFile(info, false);
+      auto added_names = loadDataFromFile(info, false);
+      if (!added_names.empty() && !layout_datafiles.contains(datafile_path))
+      {
+        layout_datafiles.push_back(datafile_path);
+      }
       datafile_elem = datafile_elem.nextSiblingElement("fileInfo");
+    }
+    if (!layout_datafiles.empty())
+    {
+      _current_datafiles = layout_datafiles;
+      updateLoadedFilesList();
     }
   }
 
@@ -3723,6 +3794,7 @@ void MainWindow::on_buttonReloadData_clicked()
     loadDataFromFile(info, false);
   }
   ui->buttonReloadData->setEnabled(!_loaded_datafiles_previous.empty());
+  updateLoadedFilesList();
 }
 
 void MainWindow::on_buttonCloseStatus_clicked()
