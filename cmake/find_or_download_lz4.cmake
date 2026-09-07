@@ -14,7 +14,7 @@ function(find_or_download_lz4)
     # lz4 ###
     cpmaddpackage(
       NAME lz4
-      URL https://github.com/lz4/lz4/archive/refs/tags/v1.10.0.zip
+      URL https://ghfast.top/https://github.com/lz4/lz4/archive/refs/tags/v1.10.0.zip
       DOWNLOAD_ONLY YES)
 
     set(LZ4_FOUND TRUE FORCE)

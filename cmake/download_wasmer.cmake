@@ -6,7 +6,7 @@ function(download_wasmer)
   endif()
 
   set(WASMER_VERSION "v7.0.1")
-  set(WASMER_BASE_URL "https://github.com/wasmerio/wasmer/releases/download/${WASMER_VERSION}")
+  set(WASMER_BASE_URL "https://ghfast.top/https://github.com/wasmerio/wasmer/releases/download/${WASMER_VERSION}")
 
   if(WIN32)
     if(MINGW)
@@ -69,7 +69,7 @@ function(download_wasmer)
         IMPORTED_LOCATION "${wasmer_SOURCE_DIR}/lib/wasmer.dll"
         INTERFACE_INCLUDE_DIRECTORIES "${wasmer_SOURCE_DIR}/include"
         INTERFACE_LINK_LIBRARIES "ws2_32;advapi32;userenv;ntdll;bcrypt")
-    # Headers default to __declspec(dllimport) on Windows ‚Äî do not override WASM_API_EXTERN
+    # Headers default to __declspec(dllimport) on Windows ù do not override WASM_API_EXTERN
   else()
     # Linux, macOS, MinGW: static library
     if(NOT EXISTS "${wasmer_SOURCE_DIR}/lib/${WASMER_STATIC_LIBRARY_NAME}")
@@ -80,7 +80,7 @@ function(download_wasmer)
         IMPORTED_LOCATION "${wasmer_SOURCE_DIR}/lib/${WASMER_STATIC_LIBRARY_NAME}"
         INTERFACE_INCLUDE_DIRECTORIES "${wasmer_SOURCE_DIR}/include")
     if(WIN32)
-      # MinGW static lib ‚Äî suppress dllimport annotations
+      # MinGW static lib ó suppress dllimport annotations
       set_property(TARGET wasmer::wasmer APPEND PROPERTY
           INTERFACE_LINK_LIBRARIES "ws2_32;advapi32;userenv;ntdll;bcrypt")
       set_property(TARGET wasmer::wasmer APPEND PROPERTY
