@@ -23,6 +23,7 @@
 #include <QSvgGenerator>
 #include <QClipboard>
 #include <iostream>
+#include <cmath>
 #include <limits>
 #include <set>
 #include <memory>
@@ -82,7 +83,14 @@ PlotWidget::PlotWidget(PlotDataMapRef& datamap, QWidget* parent)
   , _transform_select_dialog(nullptr)
   , _context_menu_enabled(true)
 {
-  connect(this, &PlotWidget::curveListChanged, this, [this]() { this->updateMaximumZoomArea(); });
+  connect(this, &PlotWidget::curveListChanged, this, [this]() {
+    this->updateMaximumZoomArea();
+    const QRectF zoom_rect = currentBoundingRect();
+    if (std::fabs(zoom_rect.top() - zoom_rect.bottom()) < 1e-9)
+    {
+      on_zoomOutVertical_triggered(false);
+    }
+  });
 
   qwtPlot()->setAcceptDrops(true);
 
@@ -916,7 +924,10 @@ bool PlotWidget::xmlLoadState(QDomElement& plot_widget, bool autozoom)
     rect.setTop(rectangle.attribute("top").toDouble());
     rect.setLeft(rectangle.attribute("left").toDouble());
     rect.setRight(rectangle.attribute("right").toDouble());
-    this->setZoomRectangle(rect, false);
+    if (std::fabs(rect.top() - rect.bottom()) > 1e-9)
+    {
+      this->setZoomRectangle(rect, false);
+    }
   }
 
   if (plot_widget.hasAttribute("style"))
@@ -989,6 +1000,11 @@ bool PlotWidget::xmlLoadState(QDomElement& plot_widget, bool autozoom)
   if (autozoom)
   {
     updateMaximumZoomArea();
+    const QRectF zoom_rect = currentBoundingRect();
+    if (std::fabs(zoom_rect.top() - zoom_rect.bottom()) < 1e-9)
+    {
+      on_zoomOutVertical_triggered(false);
+    }
   }
   replot();
   return true;

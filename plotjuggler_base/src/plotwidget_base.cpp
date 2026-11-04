@@ -285,7 +285,8 @@ Range PlotWidgetBase::getVisualizationRangeY(Range range_X) const
   }
   else
   {
-    margin = span * 0.025;
+    // Time series: flat signals (span ~= 0) need a minimum padding or Y axis ticks vanish.
+    margin = std::max(span * 0.025, 0.5);
   }
 
   top += margin;
