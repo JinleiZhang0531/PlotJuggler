@@ -722,6 +722,10 @@ QDomElement PlotWidget::xmlSaveState(QDomDocument& doc) const
   {
     plot_el.setAttribute("keep_ratio", "false");
   }
+  if (xyAxisPadding() >= 0.0)
+  {
+    plot_el.setAttribute("xy_y_padding", QString::number(xyAxisPadding(), 'g', 6));
+  }
 
   switch (lineWidth())
   {
@@ -758,6 +762,14 @@ bool PlotWidget::xmlLoadState(QDomElement& plot_widget, bool autozoom)
   _flip_x->setChecked(plot_widget.attribute("flip_x") == "true");
   _flip_y->setChecked(plot_widget.attribute("flip_y") == "true");
   setKeepRatioXYAllowed(plot_widget.attribute("keep_ratio") != "false");
+  if (plot_widget.hasAttribute("xy_y_padding"))
+  {
+    setXYAxisPadding(plot_widget.attribute("xy_y_padding").toDouble());
+  }
+  else
+  {
+    setXYAxisPadding(-1.0);
+  }
 
   auto line_width_str = plot_widget.attribute("line_width", QString("1.0"));
   if (line_width_str == "1.0")

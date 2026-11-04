@@ -4,7 +4,7 @@
   <Tab containers="1" tab_name="acc">
    <Container>
     <DockSplitter count="2" orientation="-" sizes="0.237723;0.762277">
-     <DockSplitter count="2" orientation="|" sizes="0.500667;0.499333">
+     <DockSplitter count="2" orientation="|" sizes="0.500702;0.499298">
       <DockArea name="...">
        <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
         <range bottom="-0.150000" left="0.016704" right="48.574270" top="6.150000"/>
@@ -24,7 +24,7 @@
        </plot>
       </DockArea>
      </DockSplitter>
-     <DockSplitter count="2" orientation="|" sizes="0.502667;0.497333">
+     <DockSplitter count="2" orientation="|" sizes="0.502809;0.497191">
       <DockSplitter count="3" orientation="-" sizes="0.333333;0.333333;0.333333">
        <DockArea name="...">
         <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
@@ -84,7 +84,7 @@
   <Tab containers="1" tab_name="obj">
    <Container>
     <DockSplitter count="1" orientation="-" sizes="1">
-     <DockSplitter count="2" orientation="|" sizes="0.500667;0.499333">
+     <DockSplitter count="2" orientation="|" sizes="0.500702;0.499298">
       <DockSplitter count="2" orientation="-" sizes="0.5;0.5">
        <DockArea name="...">
         <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
@@ -133,13 +133,17 @@
        <curve color="#17becf" name="/functions/pnc/control_info/measure/vel_ego"/>
        <curve color="#ff7f0e" name="/functions/pnc/control_info/planning_output/trajectory[0]/speed"/>
        <curve color="#1f77b4" name="/functions/pnc/control_info/reference/vel_ref"/>
+       <curve color="#d62728" name="/functions/pnc/control_info/lon_mpc_input/ref_vel_vec[0]"/>
+       <curve color="#2ca02c" name="/functions/pnc/control_info/lon_mpc_input/ref_vel_vec[25]"/>
       </plot>
      </DockArea>
      <DockSplitter count="2" orientation="|" sizes="0.5;0.5">
       <DockArea name="plan_speed_vs_s">
-       <plot flip_x="false" flip_y="false" keep_ratio="false" line_width="1.5" mode="XYPlot" style="LinesAndDots">
+       <plot flip_x="false" flip_y="false" keep_ratio="false" line_width="1.5" mode="XYPlot" style="LinesAndDots" xy_y_padding="0.05">
+        <range bottom="31.661270" left="-4.824394" right="197.800148" top="32.663605"/>
         <limitY/>
         <curve color="#ff7f0e" name="plan_traj_v_vs_s"/>
+        <curve color="#1f77b4" name="lon_mpc_ref_v_vs_s"/>
        </plot>
       </DockArea>
       <DockArea name="plan_speed_horizon_ts">
@@ -147,6 +151,7 @@
         <range bottom="0.000000" left="0.016704" right="48.574270" top="32.163927"/>
         <limitY min="0"/>
         <curve color="#17becf" name="/functions/pnc/control_info/planning_output/trajectory[0]/speed"/>
+        <curve color="#d62728" name="/functions/pnc/control_info/lon_mpc_input/ref_vel_vec[0]"/>
        </plot>
       </DockArea>
      </DockSplitter>
@@ -251,11 +256,38 @@ function FillPlanSpeedProfile(scatter, prefix, timestamp)
     idx = idx + 1
   end
 end
+
+-- X = lon MPC ref_s_vec (relative to point 0); Y = ref_vel_vec (m/s), 26 points @ 0.1s
+function FillLonMpcRefProfile(scatter, prefix, timestamp)
+  scatter:clear()
+  idx = 0
+  s0 = nil
+  while idx &lt; 30 do
+    series_v = TimeseriesView.find(string.format(&quot;%s/ref_vel_vec[%d]&quot;, prefix, idx))
+    if series_v == nil then break end
+    v_val = series_v:atTime(timestamp)
+    if v_val == nil then break end
+    x_val = nil
+    series_s = TimeseriesView.find(string.format(&quot;%s/ref_s_vec[%d]&quot;, prefix, idx))
+    if series_s ~= nil then
+      s_val = series_s:atTime(timestamp)
+      if s_val ~= nil then
+        if s0 == nil then s0 = s_val end
+        x_val = s_val - s0
+      end
+    end
+    if x_val == nil then
+      x_val = idx * 0.1
+    end
+    scatter:push_back(x_val, v_val)
+    idx = idx + 1
+  end
+end
 "/>
    <scripts>
     <script function="FillPlanSpeedProfile(plan_traj_v_vs_s, &quot;/functions/pnc/control_info/planning_output/trajectory&quot;, tracker_time)
-FillPlanSpeedProfile(pnc_lite_traj_v_vs_s, &quot;/functions/pnc_lite/trajectory/trajectory&quot;, tracker_time)" global="plan_traj_v_vs_s = ScatterXY.new(&quot;plan_traj_v_vs_s&quot;)
-pnc_lite_traj_v_vs_s = ScatterXY.new(&quot;pnc_lite_traj_v_vs_s&quot;)" name="build_plan_speed_profiles"/>
+FillLonMpcRefProfile(lon_mpc_ref_v_vs_s, &quot;/functions/pnc/control_info/lon_mpc_input&quot;, tracker_time)" global="plan_traj_v_vs_s = ScatterXY.new(&quot;plan_traj_v_vs_s&quot;)
+lon_mpc_ref_v_vs_s = ScatterXY.new(&quot;lon_mpc_ref_v_vs_s&quot;)" name="build_plan_speed_profiles"/>
    </scripts>
   </plugin>
  </Plugins>

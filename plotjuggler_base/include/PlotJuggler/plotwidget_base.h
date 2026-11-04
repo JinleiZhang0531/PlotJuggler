@@ -124,6 +124,13 @@ public:
     return _keep_aspect_ratio_allowed;
   }
 
+  // XY Y-axis padding after data min/max (m/s for speed plots). Negative = default (10% + 0.5 floor).
+  void setXYAxisPadding(double padding_m);
+  double xyAxisPadding() const
+  {
+    return _xy_axis_padding;
+  }
+
   void setAcceptDrops(bool accept);
 
   void overrideCurvesStyle(std::optional<CurveStyle> style);
@@ -191,6 +198,8 @@ private:
   bool _keep_aspect_ratio;
   bool _keep_aspect_ratio_requested = false;
   bool _keep_aspect_ratio_allowed = true;
+
+  double _xy_axis_padding = -1.0;
 
   LineWidth _line_width = LineWidth::POINTS_1_0;
 };

@@ -274,7 +274,19 @@ Range PlotWidgetBase::getVisualizationRangeY(Range range_X) const
   // XY plots: padding proportional to the data span, with a floor so flat profiles
   // (e.g. constant speed vs s) still get a readable Y range.
   const double span = top - bottom;
-  double margin = isXYPlot() ? std::max(span * 0.1, 0.5) : span * 0.025;
+  double margin;
+  if (isXYPlot() && _xy_axis_padding >= 0.0)
+  {
+    margin = _xy_axis_padding;
+  }
+  else if (isXYPlot())
+  {
+    margin = std::max(span * 0.1, 0.5);
+  }
+  else
+  {
+    margin = span * 0.025;
+  }
 
   top += margin;
   bottom -= margin;
@@ -496,6 +508,11 @@ void PlotWidgetBase::setKeepRatioXYAllowed(bool allowed)
 {
   _keep_aspect_ratio_allowed = allowed;
   setKeepRatioXY(_keep_aspect_ratio_requested);
+}
+
+void PlotWidgetBase::setXYAxisPadding(double padding_m)
+{
+  _xy_axis_padding = padding_m;
 }
 
 void PlotWidgetBase::setKeepRatioXY(bool active)
