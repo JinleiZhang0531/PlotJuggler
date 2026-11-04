@@ -1,0 +1,275 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root>
+ <tabbed_widget name="Main Window" parent="main_window">
+  <Tab containers="1" tab_name="acc">
+   <Container>
+    <DockSplitter count="2" orientation="-" sizes="0.237723;0.762277">
+     <DockSplitter count="2" orientation="|" sizes="0.500667;0.499333">
+      <DockArea name="...">
+       <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
+        <range bottom="-0.150000" left="0.016704" right="48.574270" top="6.150000"/>
+        <limitY/>
+        <curve color="#1f77b4" name="/functions/pnc/pnc_state/state"/>
+        <curve color="#ff7f0e" name="/functions/pnc/pnc_state/pnc_run_state"/>
+        <curve color="#9467bd" name="/functions/pnc/control_info/state_machine/low_speed_mode_enable"/>
+       </plot>
+      </DockArea>
+      <DockArea name="...">
+       <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
+        <range bottom="-0.075000" left="0.016704" right="48.574270" top="3.075000"/>
+        <limitY/>
+        <curve color="#d62728" name="/functions/pnc/control_info/state_machine/ctrl_status"/>
+        <curve color="#17becf" name="/functions/pnc/control_info/state_machine/kstop_timer"/>
+        <curve color="#1f77b4" name="/functions/pnc_lite/trajectory/long_planning_state/state"/>
+       </plot>
+      </DockArea>
+     </DockSplitter>
+     <DockSplitter count="2" orientation="|" sizes="0.502667;0.497333">
+      <DockSplitter count="3" orientation="-" sizes="0.333333;0.333333;0.333333">
+       <DockArea name="...">
+        <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
+         <range bottom="0.000000" left="0.016704" right="48.574270" top="0.000000"/>
+         <limitY/>
+         <curve color="#ff7f0e" name="/functions/pnc/control_info/state_machine/is_brake_to_stop"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
+         <range bottom="0.000000" left="0.016704" right="48.574270" top="0.000000"/>
+         <limitY/>
+         <curve color="#f14cc1" name="/functions/pnc/control_info/state_machine/lon_stop_timer"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
+         <range bottom="0.000000" left="0.016704" right="48.574270" top="0.000000"/>
+         <limitY/>
+         <curve color="#bcbd22" name="/functions/pnc/control_cmd/acc_torque"/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+      <DockSplitter count="3" orientation="-" sizes="0.333333;0.333333;0.333333">
+       <DockArea name="...">
+        <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
+         <range bottom="0.000000" left="0.016704" right="48.574270" top="0.000000"/>
+         <limitY/>
+         <curve color="#1ac938" name="/functions/pnc/control_info/state_machine/is_car_stop"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
+         <range bottom="-1.095448" left="0.016704" right="48.574270" top="33.376188"/>
+         <limitY/>
+         <curve color="#9467bd" name="/functions/pnc/control_info/measure/vel"/>
+         <curve color="#17becf" name="/functions/pnc/control_info/measure/vel_ego"/>
+         <curve color="#ff7f0e" name="/functions/pnc/control_info/planning_output/trajectory[0]/speed"/>
+         <curve color="#1f77b4" name="/functions/pnc/control_info/reference/vel_ref"/>
+         <curve color="#bcbd22" name="/functions/pnc/control_info/actuator_input/ctrl_output/acc_cmd"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
+         <range bottom="-0.075000" left="0.016704" right="48.574270" top="3.075000"/>
+         <limitY/>
+         <curve color="#1f77b4" name="/functions/pnc_lite/trajectory/long_planning_state/state"/>
+         <curve color="#d62728" name="/functions/pnc/control_info/state_machine/stop_traj_flag"/>
+         <curve color="#1ac938" name="/functions/pnc/control_info/state_machine/is_stop_traj"/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+     </DockSplitter>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="obj">
+   <Container>
+    <DockSplitter count="1" orientation="-" sizes="1">
+     <DockSplitter count="2" orientation="|" sizes="0.500667;0.499333">
+      <DockSplitter count="2" orientation="-" sizes="0.5;0.5">
+       <DockArea name="...">
+        <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
+         <range bottom="0.000000" left="0.016704" right="48.574270" top="0.000000"/>
+         <limitY/>
+         <curve color="#1f77b4" name="/functions/pnc_lite/trajectory/odom_pose/roll"/>
+         <curve color="#d62728" name="/functions/pnc_lite/trajectory/odom_pose/z"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
+         <range bottom="0.000000" left="0.016704" right="48.574270" top="0.000000"/>
+         <limitY/>
+         <curve color="#ff7f0e" name="/functions/pnc_lite/trajectory/hmi_msg/cipv_distance"/>
+         <curve color="#f14cc1" name="/functions/pnc_lite/trajectory/hmi_msg/cipv_speed"/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+      <DockSplitter count="2" orientation="-" sizes="0.5;0.5">
+       <DockArea name="...">
+        <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
+         <range bottom="-0.000237" left="0.016704" right="48.574270" top="0.000523"/>
+         <limitY/>
+         <curve color="#1ac938" name="/functions/pnc/control_info/planning_output/trajectory[0]/acc"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
+         <range bottom="0.000000" left="0.000000" right="1.000000" top="1.000000"/>
+         <limitY/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+     </DockSplitter>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="plan_speed">
+   <Container>
+    <DockSplitter count="2" orientation="-" sizes="0.449777;0.550223">
+     <DockArea name="plan_speed_time">
+      <plot flip_x="false" flip_y="false" line_width="1.5" mode="TimeSeries">
+       <range bottom="31.763547" left="0.016704" right="48.574270" top="32.574750"/>
+       <limitY/>
+       <curve color="#9467bd" name="/functions/pnc/control_info/measure/vel"/>
+       <curve color="#17becf" name="/functions/pnc/control_info/measure/vel_ego"/>
+       <curve color="#ff7f0e" name="/functions/pnc/control_info/planning_output/trajectory[0]/speed"/>
+       <curve color="#1f77b4" name="/functions/pnc/control_info/reference/vel_ref"/>
+      </plot>
+     </DockArea>
+     <DockSplitter count="2" orientation="|" sizes="0.5;0.5">
+      <DockArea name="plan_speed_vs_s">
+       <plot flip_x="false" flip_y="false" keep_ratio="false" line_width="1.5" mode="XYPlot" style="LinesAndDots">
+        <limitY/>
+        <curve color="#ff7f0e" name="plan_traj_v_vs_s"/>
+       </plot>
+      </DockArea>
+      <DockArea name="plan_speed_horizon_ts">
+       <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
+        <range bottom="0.000000" left="0.016704" right="48.574270" top="32.163927"/>
+        <limitY min="0"/>
+        <curve color="#17becf" name="/functions/pnc/control_info/planning_output/trajectory[0]/speed"/>
+       </plot>
+      </DockArea>
+     </DockSplitter>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <currentTabIndex index="2"/>
+ </tabbed_widget>
+ <use_relative_time_offset enabled="1"/>
+ <streaming_buffer_size value="5"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <!-- - - - - - - - - - - - - - - -->
+ <Plugins>
+  <plugin ID="DataLoad CSV">
+   <parameters delimiter="0" skip_rows="0" time_axis=""/>
+  </plugin>
+  <plugin ID="DataLoad MCAP">
+   <parameters clamp_large_arrays="1" max_array_size="500" selected_topics="/functions/pnc_lite/ssm_road;/functions/pnc_lite/trajectory;/functions/pnc/control_cmd;/functions/pnc/control_info;/functions/pnc/pnc_state;/sensor/chassis/vehicle_status" use_mcap_log_time="0" use_timestamp="0"/>
+  </plugin>
+  <plugin ID="DataLoad ULog"/>
+  <plugin ID="Foxglove ROS2 Bridge">
+   <foxglove_client clamp_large_arrays="0" max_array_size="500" url="ws://127.0.0.1:8765" use_timestamp="0">
+    <topics/>
+   </foxglove_client>
+  </plugin>
+  <plugin ID="PlotJuggler Bridge">
+   <websocket_client clamp_large_arrays="0" max_array_size="500" url="ws://127.0.0.1:9090" use_timestamp="0">
+    <topics/>
+   </websocket_client>
+  </plugin>
+  <plugin ID="Serial Port"/>
+  <plugin ID="UDP Server"/>
+  <plugin ID="WebSocket Server"/>
+  <plugin ID="ZMQ Subscriber"/>
+  <plugin ID="CSV/Parquet Exporter"/>
+  <plugin ID="Fast Fourier Transform"/>
+  <plugin ID="Quaternion to RPY"/>
+  <plugin ID="Reactive Script Editor">
+   <library code="--[[ Helper function to create a series from arrays
+
+ new_series: a series previously created with ScatterXY.new(name)
+ prefix:     prefix of the timeseries, before the index of the array
+ suffix_X:   suffix to complete the name of the series containing the X value. If [nil], use the index of the array.
+ suffix_Y:   suffix to complete the name of the series containing the Y value
+ timestamp:   usually the tracker_time variable
+--]]
+
+function CreateSeriesFromArray( new_series, prefix, suffix_X, suffix_Y, timestamp )
+  new_series:clear()
+  index = 0
+  while(true) do
+    x = index;
+    if suffix_X ~= nil then
+      series_x = TimeseriesView.find( string.format( &quot;%s[%d]/%s&quot;, prefix, index, suffix_X) )
+      if series_x == nil then break end
+      x = series_x:atTime(timestamp)
+      if x == nil then break end
+    end
+    series_y = TimeseriesView.find( string.format( &quot;%s[%d]/%s&quot;, prefix, index, suffix_Y) )
+    if series_y == nil then break end
+    y = series_y:atTime(timestamp)
+    if y == nil then break end
+    new_series:push_back(x,y)
+    index = index+1
+  end
+end
+
+-- X = arc length (s - s0) when available; Y = PlanningPoint.speed (m/s)
+function FillPlanSpeedProfile(scatter, prefix, timestamp)
+  scatter:clear()
+  idx = 0
+  s0 = nil
+  x0 = nil
+  while idx &lt; 120 do
+    series_v = TimeseriesView.find(string.format(&quot;%s[%d]/speed&quot;, prefix, idx))
+    if series_v == nil then break end
+    v_val = series_v:atTime(timestamp)
+    if v_val == nil then break end
+    x_val = nil
+    series_s = TimeseriesView.find(string.format(&quot;%s[%d]/s&quot;, prefix, idx))
+    if series_s ~= nil then
+      s_val = series_s:atTime(timestamp)
+      if s_val ~= nil then
+        if s0 == nil then s0 = s_val end
+        x_val = s_val - s0
+      end
+    end
+    if x_val == nil then
+      series_x = TimeseriesView.find(string.format(&quot;%s[%d]/x&quot;, prefix, idx))
+      if series_x ~= nil then
+        x_at = series_x:atTime(timestamp)
+        if x_at ~= nil then
+          if x0 == nil then x0 = x_at end
+          x_val = x_at - x0
+        end
+      end
+    end
+    if x_val == nil then
+      x_val = idx
+    end
+    scatter:push_back(x_val, v_val)
+    idx = idx + 1
+  end
+end
+"/>
+   <scripts>
+    <script function="FillPlanSpeedProfile(plan_traj_v_vs_s, &quot;/functions/pnc/control_info/planning_output/trajectory&quot;, tracker_time)
+FillPlanSpeedProfile(pnc_lite_traj_v_vs_s, &quot;/functions/pnc_lite/trajectory/trajectory&quot;, tracker_time)" global="plan_traj_v_vs_s = ScatterXY.new(&quot;plan_traj_v_vs_s&quot;)
+pnc_lite_traj_v_vs_s = ScatterXY.new(&quot;pnc_lite_traj_v_vs_s&quot;)" name="build_plan_speed_profiles"/>
+   </scripts>
+  </plugin>
+ </Plugins>
+ <!-- - - - - - - - - - - - - - - -->
+ <previouslyLoaded_Datafiles>
+  <fileInfo filename="../../../../Downloads/mcapWriter_record_20261030-151426_tag_2026-10-30_15_14_57__异常画龙.mcap" prefix="">
+   <plugin ID="DataLoad MCAP">
+    <parameters clamp_large_arrays="1" max_array_size="500" selected_topics="/functions/pnc_lite/ssm_road;/functions/pnc_lite/trajectory;/functions/pnc/control_cmd;/functions/pnc/control_info;/functions/pnc/pnc_state;/sensor/chassis/vehicle_status" use_mcap_log_time="0" use_timestamp="0"/>
+   </plugin>
+  </fileInfo>
+ </previouslyLoaded_Datafiles>
+ <!-- - - - - - - - - - - - - - - -->
+ <customMathEquations/>
+ <snippets/>
+ <colorMaps/>
+ <!-- - - - - - - - - - - - - - - -->
+</root>

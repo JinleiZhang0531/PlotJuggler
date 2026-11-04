@@ -116,6 +116,14 @@ public:
 
   void setKeepRatioXY(bool active);
 
+  // Per-plot opt-out: when false, the global "keep XY ratio" button is ignored.
+  void setKeepRatioXYAllowed(bool allowed);
+
+  bool keepRatioXYAllowed() const
+  {
+    return _keep_aspect_ratio_allowed;
+  }
+
   void setAcceptDrops(bool accept);
 
   void overrideCurvesStyle(std::optional<CurveStyle> style);
@@ -181,6 +189,8 @@ private:
   QRectF _max_zoom_rect;
 
   bool _keep_aspect_ratio;
+  bool _keep_aspect_ratio_requested = false;
+  bool _keep_aspect_ratio_allowed = true;
 
   LineWidth _line_width = LineWidth::POINTS_1_0;
 };

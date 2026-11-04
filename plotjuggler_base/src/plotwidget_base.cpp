@@ -271,7 +271,10 @@ Range PlotWidgetBase::getVisualizationRangeY(Range range_X) const
     top = 1.0;
   }
 
-  double margin = (top - bottom) * 0.025;
+  // XY plots: padding proportional to the data span, with a floor so flat profiles
+  // (e.g. constant speed vs s) still get a readable Y range.
+  const double span = top - bottom;
+  double margin = isXYPlot() ? std::max(span * 0.1, 0.5) : span * 0.025;
 
   top += margin;
   bottom -= margin;
@@ -489,8 +492,16 @@ bool PlotWidgetBase::keepRatioXY() const
   return _keep_aspect_ratio;
 }
 
+void PlotWidgetBase::setKeepRatioXYAllowed(bool allowed)
+{
+  _keep_aspect_ratio_allowed = allowed;
+  setKeepRatioXY(_keep_aspect_ratio_requested);
+}
+
 void PlotWidgetBase::setKeepRatioXY(bool active)
 {
+  _keep_aspect_ratio_requested = active;
+  active = active && _keep_aspect_ratio_allowed;
   _keep_aspect_ratio = active;
   if (isXYPlot() && active)
   {

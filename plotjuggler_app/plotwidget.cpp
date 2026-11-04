@@ -718,6 +718,10 @@ QDomElement PlotWidget::xmlSaveState(QDomDocument& doc) const
 
   plot_el.setAttribute("flip_x", isXYPlot() && _flip_x->isChecked() ? "true" : "false");
   plot_el.setAttribute("flip_y", _flip_y->isChecked() ? "true" : "false");
+  if (!keepRatioXYAllowed())
+  {
+    plot_el.setAttribute("keep_ratio", "false");
+  }
 
   switch (lineWidth())
   {
@@ -753,6 +757,7 @@ bool PlotWidget::xmlLoadState(QDomElement& plot_widget, bool autozoom)
 
   _flip_x->setChecked(plot_widget.attribute("flip_x") == "true");
   _flip_y->setChecked(plot_widget.attribute("flip_y") == "true");
+  setKeepRatioXYAllowed(plot_widget.attribute("keep_ratio") != "false");
 
   auto line_width_str = plot_widget.attribute("line_width", QString("1.0"));
   if (line_width_str == "1.0")

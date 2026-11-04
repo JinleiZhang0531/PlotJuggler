@@ -1953,12 +1953,28 @@ void MainWindow::updateReactivePlots()
   }
 
   forEachWidget([&](PlotWidget* plot) {
+    bool reactive_curve_on_plot = false;
     for (auto& curve : plot->curveList())
     {
       if (updated_curves.count(curve.src_name) != 0)
       {
-        plot->replot();
+        reactive_curve_on_plot = true;
+        break;
       }
+    }
+    if (!reactive_curve_on_plot)
+    {
+      return;
+    }
+    // XY + Reactive: auto-fit X (arc length) and Y (speed) to current snapshot each tracker step.
+    if (plot->isXYPlot())
+    {
+      plot->updateCurves(false);
+      plot->zoomOut(false);
+    }
+    else
+    {
+      plot->replot();
     }
   });
 }
