@@ -5,6 +5,7 @@
  */
 
 #include "PlotJuggler/plotwidget_base.h"
+#include <cmath>
 #include "timeseries_qwt.h"
 
 #include "plotmagnifier.h"
@@ -271,24 +272,28 @@ Range PlotWidgetBase::getVisualizationRangeY(Range range_X) const
     top = 1.0;
   }
 
-  // XY plots: padding proportional to the data span, with a floor so flat profiles
-  // (e.g. constant speed vs s) still get a readable Y range.
   const double span = top - bottom;
-  double margin;
-  if (isXYPlot() && _xy_axis_padding >= 0.0)
+
+  if (!isXYPlot())
   {
-    margin = _xy_axis_padding;
-  }
-  else if (isXYPlot())
-  {
-    margin = std::max(span * 0.1, 0.5);
-  }
-  else
-  {
-    // Time series: flat signals (span ~= 0) need a minimum padding or Y axis ticks vanish.
-    margin = std::max(span * 0.025, 0.5);
+    // Time series: fit exactly to data min/max. A flat signal would give a zero-height
+    // axis, so widen it by 20% of its value (fixed +-0.2 when the value is 0).
+    if (span < 1e-9)
+    {
+      double half = std::fabs(top) * 0.2;
+      if (half < 1e-9)
+      {
+        half = 0.2;
+      }
+      top += half;
+      bottom -= half;
+    }
+    return Range({ bottom, top });
   }
 
+  // XY plots: padding proportional to the data span, with a floor so flat profiles
+  // (e.g. constant speed vs s) still get a readable Y range.
+  const double margin = (_xy_axis_padding >= 0.0) ? _xy_axis_padding : std::max(span * 0.1, 0.5);
   top += margin;
   bottom -= margin;
 

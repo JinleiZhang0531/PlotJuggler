@@ -221,6 +221,15 @@ private:
   QDomDocument xmlSaveState() const;
   bool xmlLoadState(QDomDocument state_document);
 
+  QString _layout_filename;
+  QString _saved_layout_fingerprint;
+  QString layoutFingerprint() const;
+  void markLayoutSaved();
+  bool saveLayoutToFile(const QString& fileName, bool save_datasource, bool save_snippets);
+  bool saveLayoutWithDialog();
+  // Returns false when the user cancels closing.
+  bool maybeSaveLayout();
+
   void checkAllCurvesFromLayout(const QDomElement& root);
 
   void importPlotDataMap(PlotDataMapRef& new_data, bool remove_old);

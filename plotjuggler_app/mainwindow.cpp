@@ -335,6 +335,7 @@ MainWindow::MainWindow(const QCommandLineParser& commandline_parser, QWidget* pa
 
   // save initial state
   onUndoableChange();
+  markLayoutSaved();
 
   _replot_timer = new QTimer(this);
   connect(_replot_timer, &QTimer::timeout, this, [this]() { updateDataAndReplot(false); });
@@ -2513,7 +2514,74 @@ bool MainWindow::loadLayoutFromFile(QString filename, bool load_datafiles)
 
   _undo_states.clear();
   _undo_states.push_back(domDocument);
+
+  _layout_filename = QFileInfo(filename).absoluteFilePath();
+  markLayoutSaved();
   return true;
+}
+
+QString MainWindow::layoutFingerprint() const
+{
+  QDomDocument doc = xmlSaveState();
+  // Zoom ranges change on every zoom/pan; they should not count as a layout edit.
+  QDomNodeList ranges = doc.elementsByTagName("range");
+  std::vector<QDomNode> to_remove;
+  for (int i = 0; i < ranges.size(); i++)
+  {
+    to_remove.push_back(ranges.at(i));
+  }
+  for (auto& node : to_remove)
+  {
+    node.parentNode().removeChild(node);
+  }
+  return doc.toString(0);
+}
+
+void MainWindow::markLayoutSaved()
+{
+  _saved_layout_fingerprint = layoutFingerprint();
+}
+
+bool MainWindow::maybeSaveLayout()
+{
+  if (layoutFingerprint() == _saved_layout_fingerprint)
+  {
+    return true;
+  }
+
+  QMessageBox msgBox(this);
+  msgBox.setWindowTitle("Save Layout?");
+  msgBox.setIcon(QMessageBox::Question);
+  msgBox.setText("The layout has been modified.");
+  if (_layout_filename.isEmpty())
+  {
+    msgBox.setInformativeText("Do you want to save it to an XML file before closing?");
+  }
+  else
+  {
+    msgBox.setInformativeText(
+        tr("Do you want to save the changes to:\n%1").arg(_layout_filename));
+  }
+  msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+  msgBox.setDefaultButton(QMessageBox::Save);
+
+  switch (msgBox.exec())
+  {
+    case QMessageBox::Save: {
+      if (_layout_filename.isEmpty())
+      {
+        return saveLayoutWithDialog();
+      }
+      QSettings settings;
+      return saveLayoutToFile(_layout_filename,
+                              settings.value("MainWindow.saveLayoutDataSource", true).toBool(),
+                              settings.value("MainWindow.saveLayoutSnippets", true).toBool());
+    }
+    case QMessageBox::Discard:
+      return true;
+    default:
+      return false;
+  }
 }
 
 void MainWindow::linkedZoomOut()
@@ -2953,6 +3021,12 @@ void MainWindow::on_buttonTimeTracker_pressed()
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
+  if (!maybeSaveLayout())
+  {
+    event->ignore();
+    return;
+  }
+
   _replot_timer->stop();
   _publish_timer->stop();
 
@@ -3341,12 +3415,19 @@ void MainWindow::on_buttonLoadLayout_clicked()
 
 void MainWindow::on_buttonSaveLayout_clicked()
 {
-  QDomDocument doc = xmlSaveState();
+  saveLayoutWithDialog();
+}
 
+bool MainWindow::saveLayoutWithDialog()
+{
   QSettings settings;
 
   QString directory_path =
       settings.value("MainWindow.lastLayoutDirectory", QDir::currentPath()).toString();
+  if (!_layout_filename.isEmpty())
+  {
+    directory_path = QFileInfo(_layout_filename).absolutePath();
+  }
 
   QFileDialog saveDialog(this);
   saveDialog.setOption(QFileDialog::DontUseNativeDialog, true);
@@ -3388,24 +3469,36 @@ void MainWindow::on_buttonSaveLayout_clicked()
   saveDialog.setDefaultSuffix("xml");
   saveDialog.setNameFilter("XML (*.xml)");
   saveDialog.setDirectory(directory_path);
+  if (!_layout_filename.isEmpty())
+  {
+    saveDialog.selectFile(_layout_filename);
+  }
   saveDialog.exec();
 
   if (saveDialog.result() != QDialog::Accepted || saveDialog.selectedFiles().empty())
   {
-    return;
+    return false;
   }
 
   QString fileName = saveDialog.selectedFiles().first();
 
   if (fileName.isEmpty())
   {
-    return;
+    return false;
   }
 
-  directory_path = QFileInfo(fileName).absolutePath();
-  settings.setValue("MainWindow.lastLayoutDirectory", directory_path);
+  settings.setValue("MainWindow.lastLayoutDirectory", QFileInfo(fileName).absolutePath());
   settings.setValue("MainWindow.saveLayoutDataSource", checkbox_datasource->isChecked());
   settings.setValue("MainWindow.saveLayoutSnippets", checkbox_snippets->isChecked());
+
+  return saveLayoutToFile(fileName, checkbox_datasource->isChecked(), checkbox_snippets->isChecked());
+}
+
+bool MainWindow::saveLayoutToFile(const QString& fileName, bool save_datasource, bool save_snippets)
+{
+  QDomDocument doc = xmlSaveState();
+  QSettings settings;
+  const QString directory_path = QFileInfo(fileName).absolutePath();
 
   QDomElement root = doc.namedItem("root").toElement();
 
@@ -3417,7 +3510,7 @@ void MainWindow::on_buttonSaveLayout_clicked()
 
   root.appendChild(doc.createComment(" - - - - - - - - - - - - - - "));
 
-  if (checkbox_datasource->isChecked())
+  if (save_datasource)
   {
     QDomElement loaded_list = doc.createElement("previouslyLoaded_Datafiles");
 
@@ -3444,7 +3537,7 @@ void MainWindow::on_buttonSaveLayout_clicked()
   }
   //-----------------------------------
   root.appendChild(doc.createComment(" - - - - - - - - - - - - - - "));
-  if (checkbox_snippets->isChecked())
+  if (save_snippets)
   {
     QDomElement custom_equations = doc.createElement("customMathEquations");
     for (const auto& custom_it : _transform_functions)
@@ -3476,12 +3569,20 @@ void MainWindow::on_buttonSaveLayout_clicked()
   root.appendChild(doc.createComment(" - - - - - - - - - - - - - - "));
   //------------------------------------
   QFile file(fileName);
-  if (file.open(QIODevice::WriteOnly))
+  if (!file.open(QIODevice::WriteOnly))
   {
-    QTextStream stream(&file);
-    stream.setCodec("UTF-8");
-    WriteSortedXml(stream, doc);
+    QMessageBox::warning(this, tr("Layout"),
+                         tr("Cannot write file %1:\n%2.").arg(fileName).arg(file.errorString()));
+    return false;
   }
+  QTextStream stream(&file);
+  stream.setCodec("UTF-8");
+  WriteSortedXml(stream, doc);
+  file.close();
+
+  _layout_filename = QFileInfo(fileName).absoluteFilePath();
+  markLayoutSaved();
+  return true;
 }
 
 void MainWindow::onActionFullscreenTriggered()

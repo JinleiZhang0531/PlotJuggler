@@ -1001,7 +1001,7 @@ bool PlotWidget::xmlLoadState(QDomElement& plot_widget, bool autozoom)
   {
     updateMaximumZoomArea();
     const QRectF zoom_rect = currentBoundingRect();
-    if (std::fabs(zoom_rect.top() - zoom_rect.bottom()) < 1e-9)
+    if (!isXYPlot() || std::fabs(zoom_rect.top() - zoom_rect.bottom()) < 1e-9)
     {
       on_zoomOutVertical_triggered(false);
     }
